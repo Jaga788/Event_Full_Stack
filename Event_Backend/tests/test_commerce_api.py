@@ -9,8 +9,10 @@ from sqlalchemy.pool import StaticPool
 
 import app.database as database
 from app.core.config import settings
+from app.core.commerce import BookingStatus
 from app.core.roles import UserRole
 from app.main import app
+from app.models.booking import Booking
 from app.models.user import User
 
 
@@ -329,19 +331,39 @@ def test_cart_favorites_and_checkout_booking_lifecycle(
         headers=organizer_headers,
     )
     assert organizer_confirmed.status_code == 403
+    booking_confirmed_before_event = client.patch(
+        f"/bookings/{bookings[1]['id']}/status",
+        json={"status": "confirmed"},
+        headers=admin_headers,
+    )
+    assert booking_confirmed_before_event.status_code == 409
     assignment_before_accept = client.patch(
         f"/bookings/{bookings[1]['id']}/assignment",
         json={"organizer_id": organizer_id},
         headers=admin_headers,
     )
     assert assignment_before_accept.status_code == 409
-    admin_confirmed = client.patch(
-        f"/bookings/{bookings[1]['id']}/status",
+    event_confirmed = client.patch(
+        f"/events/{event.json()['id']}/status",
         json={"status": "confirmed"},
         headers=admin_headers,
     )
-    assert admin_confirmed.status_code == 200
-    assert admin_confirmed.json()["status"] == "confirmed"
+    assert event_confirmed.status_code == 200
+    assert event_confirmed.json()["status"] == "confirmed"
+    with database.SessionLocal() as db:
+        legacy_booking = db.get(Booking, bookings[1]["id"])
+        assert legacy_booking is not None
+        legacy_booking.status = BookingStatus.REQUESTED
+        db.commit()
+    database.create_tables()
+    confirmed_bookings = {
+        booking["id"]: booking["status"]
+        for booking in client.get("/bookings", headers=admin_headers).json()
+    }
+    assert confirmed_bookings == {
+        bookings[0]["id"]: "cancelled",
+        bookings[1]["id"]: "confirmed",
+    }
     assigned = client.patch(
         f"/bookings/{bookings[1]['id']}/assignment",
         json={"organizer_id": organizer_id},
@@ -361,6 +383,19 @@ def test_cart_favorites_and_checkout_booking_lifecycle(
         headers=organizer_headers,
     )
     assert organizer_completed.status_code == 200
+
+    assert client.post(
+        "/cart/items",
+        json={"package_id": package_id},
+        headers=customer_headers,
+    ).status_code == 201
+    later_checkout = client.post(
+        "/bookings/checkout",
+        json={"event_id": event.json()["id"]},
+        headers=customer_headers,
+    )
+    assert later_checkout.status_code == 201
+    assert later_checkout.json()[0]["status"] == "confirmed"
 
     assert client.delete(
         f"/cart/items/{cart_package.json()['id']}",

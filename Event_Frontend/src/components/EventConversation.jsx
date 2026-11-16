@@ -34,13 +34,31 @@ function EventConversation({ event, bookings = [], id }) {
 
   useEffect(() => {
     let active = true;
-    setError("");
-    api.eventMessages(token, event.id).then((result) => {
-      if (active) setMessages(result);
-    }).catch((requestError) => {
-      if (active) setError(requestError.message);
-    });
-    return () => { active = false; };
+    let timeoutId;
+    const refreshMessages = async () => {
+      try {
+        const result = await api.eventMessages(token, event.id);
+        if (active) {
+          setMessages((current) => {
+            const messagesById = new Map(current.map((message) => [message.id, message]));
+            result.forEach((message) => messagesById.set(message.id, message));
+            return [...messagesById.values()].sort((left, right) => left.id - right.id);
+          });
+          setError("");
+        }
+      } catch (requestError) {
+        if (active) setError(requestError.message);
+        if ([401, 403, 404].includes(requestError.status)) return;
+      }
+
+      if (active) timeoutId = window.setTimeout(refreshMessages, 2500);
+    };
+
+    refreshMessages();
+    return () => {
+      active = false;
+      window.clearTimeout(timeoutId);
+    };
   }, [event.id, token]);
 
   const send = async (formEvent) => {

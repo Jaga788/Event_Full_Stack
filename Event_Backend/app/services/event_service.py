@@ -1,8 +1,9 @@
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.categories import CategoryKind, EventStatus
+from app.core.commerce import BookingStatus
 from app.core.roles import UserRole
 from app.models.booking import Booking
 from app.models.event import Event
@@ -183,4 +184,25 @@ def update_event_status(
             raise EventReferenceError(
                 "Assigned organizers can only complete or cancel accepted events"
             )
+    if current_user.role == UserRole.ADMIN and status in {
+        EventStatus.CONFIRMED,
+        EventStatus.CANCELLED,
+    }:
+        event.status = status
+        booking_status = (
+            BookingStatus.CONFIRMED
+            if status == EventStatus.CONFIRMED
+            else BookingStatus.CANCELLED
+        )
+        db.execute(
+            update(Booking)
+            .where(
+                Booking.event_id == event.id,
+                Booking.status == BookingStatus.REQUESTED,
+            )
+            .values(status=booking_status)
+        )
+        db.commit()
+        db.refresh(event)
+        return event
     return event_repository.update_event_status(db, event, status)

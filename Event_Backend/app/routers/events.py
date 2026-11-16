@@ -99,6 +99,14 @@ def get_event(
             detail="Event not found",
         ) from exc
     if (
+        current_user.role == UserRole.ADMIN
+        and event_data.status != event.status
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Use the event status action to accept or decline requests",
+        )
+    if (
         current_user.role == UserRole.CUSTOMER
         and event.customer_id != current_user.id
     ):

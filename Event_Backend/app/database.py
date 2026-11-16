@@ -1,10 +1,11 @@
 
 from sqlalchemy import create_engine
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
-from app.core.categories import CategoryKind
+from app.core.categories import CategoryKind, EventStatus
+from app.core.commerce import BookingStatus
 from app.core.config import settings
 
 database_url = make_url(settings.DATABASE_URL)
@@ -58,6 +59,20 @@ def create_tables() -> None:
         ],
     )
     seed_categories()
+    with SessionLocal() as db:
+        db.execute(
+            update(Booking)
+            .where(
+                Booking.status == BookingStatus.REQUESTED,
+                Booking.event_id.in_(
+                    select(Event.id).where(
+                        Event.status == EventStatus.CONFIRMED
+                    )
+                ),
+            )
+            .values(status=BookingStatus.CONFIRMED)
+        )
+        db.commit()
 
 
 def seed_categories() -> None:

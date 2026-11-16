@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -21,6 +22,18 @@ import OrganizerDashboard from "./pages/OrganizerDashboard";
 import AiPlanner from "./pages/AiPlanner";
 
 function App() {
+  const { loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="app">
+        <main className="page-content session-checking" role="status">
+          Checking your session…
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="app">
       <ScrollToTop />

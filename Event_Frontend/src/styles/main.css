@@ -44,6 +44,7 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
 }
 .app { min-height: 100vh; display: flex; flex-direction: column; }
 .page-content { flex: 1; }
+.session-checking { display: grid; place-items: center; min-height: 100vh; color: var(--ink); }
 .page { max-width: 1180px; margin: 0 auto; padding: 24px 20px 48px; }
 .page.narrow { max-width: 720px; }
 .center { text-align: center; }
@@ -695,6 +696,15 @@ blockquote footer { margin-top: 14px; }
 .dashboard-layout .btn:hover { box-shadow: 0 8px 20px rgba(27, 53, 70, 0.2); }
 .dashboard-layout .btn-outline { border-color: var(--gold); color: var(--purple-dark); }
 .dashboard-layout .btn-outline:hover { background: var(--purple-dark); color: #fff; }
+.dashboard-layout .admin-request-actions .btn-outline {
+  background: #fff;
+  border-color: var(--red);
+  color: var(--red);
+}
+.dashboard-layout .admin-request-actions .btn-outline:hover {
+  background: var(--red);
+  color: #fff;
+}
 .dashboard-workspace > .admin-alert { margin: 0; border: 1px solid #ebe7de; }
 .dashboard-workspace > [id] { scroll-margin-top: 100px; }
 

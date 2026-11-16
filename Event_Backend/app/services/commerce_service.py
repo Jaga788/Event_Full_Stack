@@ -238,7 +238,11 @@ def checkout_cart(
                 quantity=cart_item.quantity,
                 unit_price=product.price,
                 total_price=product.price * cart_item.quantity,
-                status=BookingStatus.REQUESTED,
+                status=(
+                    BookingStatus.CONFIRMED
+                    if event.status == EventStatus.CONFIRMED
+                    else BookingStatus.REQUESTED
+                ),
             )
         )
 
@@ -330,6 +334,13 @@ def update_booking_status(
                 f"Cannot change a {booking.status.value} booking to "
                 f"{status_data.status.value}"
             )
+    elif (
+        booking.status == BookingStatus.REQUESTED
+        and status_data.status == BookingStatus.CONFIRMED
+    ):
+        raise CommerceConflictError(
+            "Accept the related event to confirm its service bookings"
+        )
     return commerce_repository.update_booking_status(
         db, booking, status_data.status
     )

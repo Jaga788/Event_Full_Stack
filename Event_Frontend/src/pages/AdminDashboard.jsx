@@ -298,7 +298,7 @@ function AdminDashboard() {
       {section === "Events" && (
         <section className="admin-panel">
           <h2>Event requests</h2>
-          <p className="muted">Accept each request before assigning an organizer. Event and service bookings are assigned independently.</p>
+          <p className="muted">Accepting an event confirms its requested service bookings. Declining it also declines its pending bookings.</p>
           <div className="admin-table-wrap">
             <table className="admin-table">
               <thead><tr><th>Event</th><th>Customer</th><th>Contact</th><th>Date / venue</th><th>Budget</th><th>Status</th><th>Organizer</th></tr></thead>
@@ -355,7 +355,7 @@ function AdminDashboard() {
       {section === "Bookings" && (
         <section className="admin-panel">
           <h2>Service booking requests</h2>
-          <p className="muted">Accept the request, then assign a service organizer. This is separate from the event organizer.</p>
+          <p className="muted">Accept the related event to confirm its service bookings. You can decline a service booking separately or assign its organizer after confirmation.</p>
           <div className="admin-table-wrap">
             <table className="admin-table">
               <thead><tr><th>Booking</th><th>Event</th><th>Customer</th><th>Total</th><th>Status</th><th>Organizer</th></tr></thead>
@@ -367,14 +367,11 @@ function AdminDashboard() {
                   <td>
                     {booking.status === "requested" ? (
                       <div className="admin-request-actions">
-                        <button className="btn btn-small" disabled={busy} onClick={() => runAction(
-                          () => api.updateBookingStatus(token, booking.id, "confirmed"),
-                          "Booking accepted.",
-                        )}>Accept</button>
                         <button className="btn btn-small btn-outline" disabled={busy} onClick={() => runAction(
                           () => api.updateBookingStatus(token, booking.id, "cancelled"),
                           "Booking declined.",
                         )}>Decline</button>
+                        <small>Accept event #{booking.event_id} to confirm</small>
                       </div>
                     ) : (
                       <select aria-label={`Status for booking ${booking.id}`} value={booking.status} disabled={busy}
