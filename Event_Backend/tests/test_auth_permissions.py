@@ -73,9 +73,17 @@ def auth_header(token: str) -> dict[str, str]:
     return {"Authorization": f"Bearer {token}"}
 
 
-def test_cors_allows_deployed_frontend_preflight(client: TestClient) -> None:
-    origin = "https://event-full-stack-sigma.vercel.app"
-
+@pytest.mark.parametrize(
+    "origin",
+    [
+        "https://event-full-stack-sigma.vercel.app",
+        "https://event-full-stack-9regjif8u-pinisetti-jagadeeshs-projects.vercel.app",
+    ],
+)
+def test_cors_allows_deployed_frontend_preflight(
+    client: TestClient,
+    origin: str,
+) -> None:
     response = client.options(
         "/categories?kind=event",
         headers={

@@ -69,10 +69,10 @@ Interactive API documentation is available at `http://127.0.0.1:8000/docs`.
 
 ## Frontend deployment and CORS
 
-The API allows requests from `https://event-full-stack-sigma.vercel.app` and local Vite
-development at `http://localhost:5173` by default. To use a different frontend domain, set
-`CORS_ORIGINS` in the backend environment (for example, in Render) to a comma-separated list of
-exact origins, with no trailing slash:
+The API allows requests from `https://event-full-stack-sigma.vercel.app`, this project's Vercel
+preview deployments, and local Vite development at `http://localhost:5173` by default. To use a
+different frontend domain, set `CORS_ORIGINS` in the backend environment (for example, in Render)
+to a comma-separated list of exact origins, with no trailing slash:
 
 ```env
 CORS_ORIGINS=https://your-frontend.vercel.app,http://localhost:5173

@@ -45,6 +45,10 @@ app.add_middleware(
         for origin in settings.CORS_ORIGINS.split(",")
         if origin.strip()
     ],
+    allow_origin_regex=(
+        r"^https://event-full-stack-[a-z0-9-]+-pinisetti-jagadeeshs-projects"
+        r"\.vercel\.app$"
+    ),
     allow_methods=["*"],
     allow_headers=["*"],
 )
