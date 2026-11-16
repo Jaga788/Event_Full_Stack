@@ -5,7 +5,6 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useWishlist } from "../context/WishlistContext";
 import useCatalog from "../hooks/useCatalog";
-import CategoryThumbnail from "./CategoryThumbnail";
 
 function Header() {
   const [text, setText] = useState("");
@@ -89,10 +88,7 @@ function Header() {
         <NavLink to="/" end>Home</NavLink>
         <NavLink to="/services">All Services</NavLink>
         {categories.map((c) => (
-          <NavLink key={c.slug} to={`/events/${c.slug}`} className="category-nav-link">
-            <CategoryThumbnail category={c} />
-            {c.name}
-          </NavLink>
+          <NavLink key={c.slug} to={`/events/${c.slug}`}>{c.name}</NavLink>
         ))}
         {user?.role === "customer" && (
           <NavLink to="/plan" className="nav-cta">Plan My Event</NavLink>

@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import useCatalog from "../hooks/useCatalog";
 import ServiceBrowser from "../components/ServiceBrowser";
-import CategoryThumbnail from "../components/CategoryThumbnail";
 
 function Services() {
   const { categories, serviceCategories, services, loading, error } = useCatalog();
@@ -61,7 +60,7 @@ function Services() {
         <button className={cat === "all" ? "active" : ""} onClick={() => setCat("all")}>All events</button>
         {categories.map((c) => (
           <button key={c.slug} className={cat === c.slug ? "active" : ""} onClick={() => setCat(c.slug)}>
-            <CategoryThumbnail category={c} />
+            {c.emoji}
             {c.name}
           </button>
         ))}
@@ -80,7 +79,7 @@ function Services() {
               className={serviceCategory === category.slug ? "active" : ""}
               onClick={() => setServiceCat(category.slug)}
             >
-              <CategoryThumbnail category={category} />
+              {category.emoji}
               {category.name}
             </button>
           ))}
