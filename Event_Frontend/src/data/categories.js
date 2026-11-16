@@ -1,5 +1,4 @@
-// Each category is one type of function a customer can plan.
-// Category photos provide the default artwork; colors remain as a fallback.
+// Category photos provide default artwork; colors remain as a fallback.
 const categories = [
   { id: 1, slug: "wedding", name: "Wedding", emoji: "💍", colors: ["#315f72", "#b77f52"],
     image: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1000&q=85",
@@ -19,6 +18,24 @@ const categories = [
   { id: 6, slug: "corporate", name: "Corporate & Parties", emoji: "🏢", colors: ["#315f72", "#b77f52"],
     image: "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1000&q=85",
     tagline: "Annual days, launches, housewarmings and anniversaries." },
+  { id: 7, slug: "packages", name: "Packages", emoji: "🎉", colors: ["#315f72", "#b77f52"],
+    image: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1000&q=85" },
+  { id: 8, slug: "decoration", name: "Decoration", emoji: "🌷", colors: ["#8b5368", "#d9a77c"],
+    image: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1000&q=85" },
+  { id: 9, slug: "catering", name: "Catering", emoji: "🍽️", colors: ["#8a5a32", "#d3a05f"],
+    image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=1000&q=85" },
+  { id: 10, slug: "photography", name: "Photography", emoji: "📷", colors: ["#34485e", "#8ba6b8"],
+    image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1000&q=85" },
+  { id: 11, slug: "entertainment", name: "Entertainment", emoji: "🎤", colors: ["#493c70", "#c06a8b"],
+    image: "https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1000&q=85" },
+  { id: 12, slug: "beauty-and-styling", name: "Beauty & Styling", emoji: "💄", colors: ["#995c70", "#e0a4a0"],
+    image: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1000&q=85" },
+  { id: 13, slug: "invitations-and-gifts", name: "Invitations & Gifts", emoji: "💌", colors: ["#765c78", "#d8a9a0"],
+    image: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=1000&q=85" },
+  { id: 14, slug: "pandit", name: "Pandit", emoji: "🪔", colors: ["#8a5a32", "#d3a05f"],
+    image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/HINDU_PRIEST.jpg/960px-HINDU_PRIEST.jpg",
+    imageCredit: "Sachinyadav99990 · CC BY-SA 4.0",
+    imageCreditUrl: "https://commons.wikimedia.org/wiki/File:HINDU_PRIEST.jpg" },
 ];
 
 export default categories;

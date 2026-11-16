@@ -4,7 +4,7 @@ import ServiceGrid from "./ServiceGrid";
 
 // Sub-category buttons + sort + price filter + the grid.
 // Used by both the "All Services" page and each event category page.
-function ServiceBrowser({ services }) {
+function ServiceBrowser({ services, showSubcategories = true }) {
   const [sub, setSub] = useState("All");
   const [sort, setSort] = useState("popular");
   const [maxPrice, setMaxPrice] = useState("all");
@@ -34,13 +34,15 @@ function ServiceBrowser({ services }) {
 
   return (
     <div>
-      <div className="sub-buttons">
-        {subs.map((s) => (
-          <button key={s} className={s === sub ? "active" : ""} onClick={() => setSub(s)}>
-            {s}
-          </button>
-        ))}
-      </div>
+      {showSubcategories && (
+        <div className="sub-buttons">
+          {subs.map((s) => (
+            <button key={s} className={s === sub ? "active" : ""} onClick={() => setSub(s)}>
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="toolbar">
         <p>{shown.length} service{shown.length === 1 ? "" : "s"}</p>

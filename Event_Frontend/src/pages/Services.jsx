@@ -85,7 +85,13 @@ function Services() {
       )}
 
       {/* Reset sub-category/sort filters when either category filter or search changes. */}
-      {!loading && !error && <ServiceBrowser key={`${cat}-${serviceCategory}-${q}`} services={matches} />}
+      {!loading && !error && (
+        <ServiceBrowser
+          key={`${cat}-${serviceCategory}-${q}`}
+          services={matches}
+          showSubcategories={false}
+        />
+      )}
     </div>
   );
 }
