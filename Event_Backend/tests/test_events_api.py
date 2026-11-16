@@ -165,14 +165,29 @@ def test_planned_event_crud(client: TestClient) -> None:
     assert updated.status_code == 200
     assert updated.json()["status"] == "planning"
     assert client.get(f"/events/{event['id']}", headers=headers).status_code == 200
+    newer_event = client.post(
+        "/events",
+        json={**event_data, "title": "Newer Family Wedding"},
+        headers=headers,
+    )
+    assert newer_event.status_code == 201
     assert len(
         client.get(
             f"/events?customer_id={customer_id}", headers=headers
         ).json()
-    ) == 1
+    ) == 2
+    assert [
+        listed_event["id"]
+        for listed_event in client.get(
+            "/events", headers=headers
+        ).json()
+    ] == [newer_event.json()["id"], event["id"]]
 
     assert client.delete(
         f"/events/{event['id']}", headers=headers
+    ).status_code == 204
+    assert client.delete(
+        f"/events/{newer_event.json()['id']}", headers=headers
     ).status_code == 204
     assert client.get(
         f"/events/{event['id']}", headers=headers

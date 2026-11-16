@@ -22,7 +22,7 @@ def list_events(
     skip: int,
     limit: int,
 ) -> list[Event]:
-    statement = select(Event).order_by(Event.event_date, Event.id)
+    statement = select(Event).order_by(Event.created_at.desc(), Event.id.desc())
     if category_id is not None:
         statement = statement.where(Event.category_id == category_id)
     if customer_id is not None:

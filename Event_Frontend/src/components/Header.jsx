@@ -76,7 +76,7 @@ function Header() {
                 </>
               )}
               <span className="user-name">Hi, {user.full_name.split(" ")[0]}</span>
-              <button className="link-btn" onClick={handleLogout}>Logout</button>
+              <button type="button" className="btn btn-small" onClick={handleLogout}>Logout</button>
             </>
           ) : (
             <NavLink to="/login" className="btn btn-small">Login</NavLink>

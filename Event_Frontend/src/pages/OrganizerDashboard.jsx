@@ -37,7 +37,23 @@ function OrganizerDashboard() {
       missingEventIds.map((eventId) => api.event(token, eventId)),
     );
     relatedEvents.forEach((event) => eventRecords.set(event.id, event));
-    setEvents([...eventRecords.values()]);
+    const latestBookingAt = new Map();
+    assignedBookings.forEach((booking) => {
+      const createdAt = Date.parse(booking.created_at || "") || 0;
+      latestBookingAt.set(
+        booking.event_id,
+        Math.max(latestBookingAt.get(booking.event_id) || 0, createdAt),
+      );
+    });
+    const activityAt = (event) => Math.max(
+      Date.parse(event.created_at || "") || 0,
+      latestBookingAt.get(event.id) || 0,
+    );
+    setEvents(
+      [...eventRecords.values()].sort(
+        (left, right) => activityAt(right) - activityAt(left) || right.id - left.id,
+      ),
+    );
     setBookings(assignedBookings);
     setError("");
   }, [token]);

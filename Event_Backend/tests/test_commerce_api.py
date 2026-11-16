@@ -396,6 +396,8 @@ def test_cart_favorites_and_checkout_booking_lifecycle(
     )
     assert later_checkout.status_code == 201
     assert later_checkout.json()[0]["status"] == "confirmed"
+    ordered_bookings = client.get("/bookings", headers=customer_headers).json()
+    assert ordered_bookings[0]["id"] == later_checkout.json()[0]["id"]
 
     assert client.delete(
         f"/cart/items/{cart_package.json()['id']}",
