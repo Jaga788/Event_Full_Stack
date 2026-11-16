@@ -21,6 +21,7 @@ function CategoryPage() {
   return (
     <div className="page">
       <div className="category-banner" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
+        {category.image && <img className="category-banner-image" src={category.image} alt="" />}
         <span className="banner-emoji">{category.emoji}</span>
         <div>
           <h1>{category.name}</h1>

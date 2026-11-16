@@ -5,6 +5,7 @@ import { formatDate, formatINR } from "../utils/format";
 import DashboardLayout from "../components/DashboardLayout";
 import SuccessToast from "../components/SuccessToast";
 import useCatalog from "../hooks/useCatalog";
+import CategoryThumbnail from "../components/CategoryThumbnail";
 
 const sections = ["Overview", "Users", "Events", "Bookings", "Catalog", "Categories"];
 const bookingStatuses = ["requested", "confirmed", "cancelled", "completed"];
@@ -32,7 +33,8 @@ const initialPackageForm = {
 
 function AdminDashboard() {
   const { token, user } = useAuth();
-  const { refreshCatalog } = useCatalog();
+  const { refreshCatalog, categories: eventCategories, serviceCategories } = useCatalog();
+  const catalogCategories = [...eventCategories, ...serviceCategories];
   const [section, setSection] = useState("Overview");
   const [data, setData] = useState({
     users: [], events: [], bookings: [], categories: [], packages: [], services: [],
@@ -579,7 +581,13 @@ function AdminDashboard() {
           </form>
           <div className="admin-category-list">
             {data.categories.map((category) => (
-              <div key={category.id}><span>{category.name}<small>{category.kind} · {category.is_active ? "active" : "inactive"}</small></span>
+              <div key={category.id}>
+                <span className="admin-category-name">
+                  <CategoryThumbnail
+                    category={catalogCategories.find((item) => item.id === category.id) || category}
+                  />
+                  <span>{category.name}<small>{category.kind} · {category.is_active ? "active" : "inactive"}</small></span>
+                </span>
                 <button className="link-btn danger" disabled={busy}
                   onClick={() => window.confirm(`Delete category "${category.name}"?`) && runAction(
                     () => api.deleteCategory(token, category.id),

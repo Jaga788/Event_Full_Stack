@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Mail, MapPin, Phone } from "lucide-react";
 import useCatalog from "../hooks/useCatalog";
 import { useAuth } from "../context/AuthContext";
+import CategoryThumbnail from "./CategoryThumbnail";
 
 function Footer() {
   const { categories } = useCatalog();
@@ -16,7 +17,10 @@ function Footer() {
         <div>
           <h4>Events</h4>
           {categories.map((c) => (
-            <Link key={c.slug} to={`/events/${c.slug}`}>{c.name}</Link>
+            <Link key={c.slug} to={`/events/${c.slug}`} className="footer-category-link">
+              <CategoryThumbnail category={c} />
+              {c.name}
+            </Link>
           ))}
         </div>
         <div>
