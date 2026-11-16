@@ -41,9 +41,13 @@ app = FastAPI(title="Event Management API", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        origin.strip()
-        for origin in settings.CORS_ORIGINS.split(",")
-        if origin.strip()
+        "https://event-full-stack-sigma.vercel.app",
+        "http://localhost:5173",
+        *[
+            origin.strip()
+            for origin in settings.CORS_ORIGINS.split(",")
+            if origin.strip()
+        ],
     ],
     allow_origin_regex=(
         r"^https://event-full-stack-[a-z0-9-]+-pinisetti-jagadeeshs-projects"
