@@ -73,6 +73,22 @@ def auth_header(token: str) -> dict[str, str]:
     return {"Authorization": f"Bearer {token}"}
 
 
+def test_cors_allows_deployed_frontend_preflight(client: TestClient) -> None:
+    origin = "https://event-full-stack-sigma.vercel.app"
+
+    response = client.options(
+        "/categories?kind=event",
+        headers={
+            "Origin": origin,
+            "Access-Control-Request-Method": "GET",
+            "Access-Control-Request-Headers": "authorization",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == origin
+
+
 def test_login_rejects_bad_credentials_and_me_requires_valid_token(
     client: TestClient,
 ) -> None:

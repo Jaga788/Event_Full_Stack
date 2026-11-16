@@ -67,6 +67,19 @@ Role permissions:
 The database health endpoint is available at `http://127.0.0.1:8000/health/db`.
 Interactive API documentation is available at `http://127.0.0.1:8000/docs`.
 
+## Frontend deployment and CORS
+
+The API allows requests from `https://event-full-stack-sigma.vercel.app` and local Vite
+development at `http://localhost:5173` by default. To use a different frontend domain, set
+`CORS_ORIGINS` in the backend environment (for example, in Render) to a comma-separated list of
+exact origins, with no trailing slash:
+
+```env
+CORS_ORIGINS=https://your-frontend.vercel.app,http://localhost:5173
+```
+
+Redeploy or restart the backend after changing this setting. Do not use `*` for production origins.
+
 ## Events, categories, and service listings
 
 All categories use the `categories` table and have a `kind` of `event` or `service`.

@@ -12,6 +12,9 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: SecretStr | None = None
     OPENAI_MODEL: str = "gpt-4o-mini"
     UPLOAD_DIR: Path = Path("uploads")
+    CORS_ORIGINS: str = (
+        "https://event-full-stack-sigma.vercel.app,http://localhost:5173"
+    )
 
     model_config = SettingsConfigDict(
         env_file=".env",
