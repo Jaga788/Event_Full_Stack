@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { formatDate, formatINR } from "../utils/format";
 import DashboardLayout from "../components/DashboardLayout";
 import SuccessToast from "../components/SuccessToast";
+import useCatalog from "../hooks/useCatalog";
 
 const sections = ["Overview", "Users", "Events", "Bookings", "Catalog", "Categories"];
 const bookingStatuses = ["requested", "confirmed", "cancelled", "completed"];
@@ -31,6 +32,7 @@ const initialPackageForm = {
 
 function AdminDashboard() {
   const { token, user } = useAuth();
+  const { refreshCatalog } = useCatalog();
   const [section, setSection] = useState("Overview");
   const [data, setData] = useState({
     users: [], events: [], bookings: [], categories: [], packages: [], services: [],
@@ -102,6 +104,7 @@ function AdminDashboard() {
         name: categoryForm.name.trim(),
         description: categoryForm.description.trim() || null,
       });
+      refreshCatalog();
       setCategoryForm({ name: "", kind: "event", description: "" });
     }, "Category created.");
   };

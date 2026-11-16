@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { api } from "../api";
 import categoryArtwork from "../data/categories";
 
@@ -37,6 +37,9 @@ function mapCatalogItem(item, type, categories, serviceCategories) {
     type,
     name: title,
     sub: type === "package" ? "Packages" : serviceCategory?.name || "Services",
+    serviceCategorySlug: serviceCategory
+      ? slugify(serviceCategory.name)
+      : type === "package" ? slugify("Packages") : "",
     category: eventCategory?.slug || "",
     eventCategories: eventCategories.map((category) => slugify(category.name)),
     eventCategoryIds: eventCategories.map((category) => category.id),
@@ -58,12 +61,21 @@ function mapCatalogItem(item, type, categories, serviceCategories) {
 }
 
 export function CatalogProvider({ children }) {
-  const [catalog, setCatalog] = useState({ categories: [], services: [] });
+  const [catalog, setCatalog] = useState({
+    categories: [],
+    serviceCategories: [],
+    services: [],
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [refreshKey, setRefreshKey] = useState(0);
+  const refreshCatalog = useCallback(() => {
+    setRefreshKey((current) => current + 1);
+  }, []);
 
   useEffect(() => {
     let active = true;
+    setLoading(true);
     Promise.all([
       api.categories("?kind=event&limit=200"),
       api.categories("?kind=service&limit=200"),
@@ -73,11 +85,12 @@ export function CatalogProvider({ children }) {
       if (!active) return;
       const categories = eventCategories.filter((item) => item.is_active).map(mapCategory);
       const activeServiceCategories = serviceCategories.filter((item) => item.is_active);
+      const mappedServiceCategories = activeServiceCategories.map(mapCategory);
       const services = [
         ...packages.filter((item) => item.is_active).map((item) => mapCatalogItem(item, "package", eventCategories, activeServiceCategories)),
         ...listings.filter((item) => item.is_active).map((item) => mapCatalogItem(item, "service", eventCategories, activeServiceCategories)),
       ];
-      setCatalog({ categories, services });
+      setCatalog({ categories, serviceCategories: mappedServiceCategories, services });
       setError("");
     }).catch((requestError) => {
       if (active) setError(requestError.message);
@@ -85,10 +98,10 @@ export function CatalogProvider({ children }) {
       if (active) setLoading(false);
     });
     return () => { active = false; };
-  }, []);
+  }, [refreshKey]);
 
   return (
-    <CatalogContext.Provider value={{ ...catalog, loading, error }}>
+    <CatalogContext.Provider value={{ ...catalog, loading, error, refreshCatalog }}>
       {children}
     </CatalogContext.Provider>
   );

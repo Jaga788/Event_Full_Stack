@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-function CategoryCard({ category }) {
+function CategoryCard({ category, to = `/events/${category.slug}` }) {
   const [imageFailed, setImageFailed] = useState(false);
   const [c1, c2] = category.colors;
   return (
-    <Link to={`/events/${category.slug}`} className="category-card">
+    <Link to={to} className="category-card">
       <div className="category-art" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
         {!imageFailed && category.image ? (
           <img

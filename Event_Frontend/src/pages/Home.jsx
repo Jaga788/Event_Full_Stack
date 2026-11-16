@@ -16,7 +16,7 @@ const steps = [
 
 function Home() {
   const { user } = useAuth();
-  const { categories, services, loading, error } = useCatalog();
+  const { categories, serviceCategories, services, loading, error } = useCatalog();
   const [eventType, setEventType] = useState("");
   const navigate = useNavigate();
   useEffect(() => {
@@ -94,6 +94,28 @@ function Home() {
           ))}
         </div>
       </section>
+
+      {serviceCategories.length > 0 && (
+        <section className="section">
+          <div className="home-section-heading">
+            <div>
+              <p className="eyebrow">Find the right team</p>
+              <h2 className="section-title">Browse services by category</h2>
+              <p className="section-sub">Explore specialists and services for your event.</p>
+            </div>
+            <Link to="/services" className="text-link">Browse all services <span aria-hidden="true">→</span></Link>
+          </div>
+          <div className="category-list">
+            {serviceCategories.map((category) => (
+              <CategoryCard
+                key={category.id}
+                category={category}
+                to={`/services?serviceCategory=${encodeURIComponent(category.slug)}`}
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="section">
         <div className="home-section-heading">
