@@ -42,7 +42,7 @@ def login(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=str(exc),
         ) from exc
-    return TokenRead(access_token=token)
+    return TokenRead(access_token=token, user=user)
 
 
 @router.get("/me", response_model=UserRead)

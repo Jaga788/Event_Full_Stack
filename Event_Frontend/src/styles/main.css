@@ -562,6 +562,14 @@ blockquote footer { margin-top: 14px; }
 .login-box h2 { font-size: clamp(1.7rem, 5vw, 2.2rem); }
 .login-box .muted { line-height: 1.65; }
 .login-box input { min-height: 48px; }
+.login-box .password-field { position: relative; width: 100%; }
+.login-box .password-field input { padding-right: 48px; }
+.login-box .password-toggle {
+  position: absolute; top: 50%; right: 12px; transform: translateY(-50%);
+  display: grid; place-items: center; padding: 6px; border: 0; border-radius: 6px;
+  background: transparent; color: var(--muted);
+}
+.login-box .password-toggle:hover { color: var(--purple-dark); }
 .login-box .switch { text-align: center; }
 .login-box .hint { text-align: center; }
 .card-error { margin-top: 9px; }

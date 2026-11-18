@@ -33,7 +33,7 @@ function Home() {
       <section className="hero">
         <div className="hero-text">
           <p className="eyebrow">Professional event planning, made personal</p>
-          <h1>Remarkable events. <span>Thoughtfully planned.</span></h1>
+          <h1>Event Management. <span>Thoughtfully planned.</span></h1>
           <p className="hero-sub">
             From company gatherings to once-in-a-lifetime celebrations, find experienced
             teams, clear packages and the details that make an event yours.

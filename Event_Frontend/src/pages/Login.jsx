@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 function Login() {
   const [isSignup, setIsSignup] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -50,7 +52,18 @@ function Login() {
           <input type="text" placeholder="Full name" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} maxLength={100} required />
         )}
         <input type="email" placeholder="Email address" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <input type="password" placeholder="Password (at least 8 characters)" autoComplete={isSignup ? "new-password" : "current-password"} value={password} onChange={(e) => setPassword(e.target.value)} minLength={8} maxLength={128} required />
+        <div className="password-field">
+          <input type={showPassword ? "text" : "password"} placeholder="Password (at least 8 characters)" autoComplete={isSignup ? "new-password" : "current-password"} value={password} onChange={(e) => setPassword(e.target.value)} minLength={8} maxLength={128} required />
+          <button
+            className="password-toggle"
+            type="button"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            aria-pressed={showPassword}
+            onClick={() => setShowPassword((visible) => !visible)}
+          >
+            {showPassword ? <EyeOff size={20} aria-hidden="true" /> : <Eye size={20} aria-hidden="true" />}
+          </button>
+        </div>
 
         {error && <p className="error" role="alert">{error}</p>}
 
@@ -58,7 +71,7 @@ function Login() {
 
         <p className="switch">
           {isSignup ? "Already have an account?" : "New to Eventora?"}{" "}
-          <button type="button" className="link-btn" onClick={() => { setIsSignup(!isSignup); setError(""); }}>
+          <button type="button" className="link-btn" onClick={() => { setIsSignup(!isSignup); setShowPassword(false); setError(""); }}>
             {isSignup ? "Login" : "Sign Up"}
           </button>
         </p>

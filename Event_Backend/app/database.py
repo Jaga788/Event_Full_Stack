@@ -94,13 +94,12 @@ def seed_categories() -> None:
         (CategoryKind.SERVICE, "Invitations & Gifts"),
     )
     with SessionLocal() as db:
-        for kind, name in seed_data:
-            category = db.scalar(
-                select(Category).where(
-                    Category.kind == kind,
-                    Category.name == name,
-                )
-            )
-            if category is None:
-                db.add(Category(kind=kind, name=name))
+        existing = set(
+            db.execute(select(Category.kind, Category.name)).all()
+        )
+        db.add_all(
+            Category(kind=kind, name=name)
+            for kind, name in seed_data
+            if (kind, name) not in existing
+        )
         db.commit()

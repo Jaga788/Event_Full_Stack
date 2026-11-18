@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 from pydantic import SecretStr
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event as sqlalchemy_event
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
@@ -105,7 +105,11 @@ def test_login_rejects_bad_credentials_and_me_requires_valid_token(
 
     token_response = login(client, "login@example.com")
     assert token_response.status_code == 200
-    token = token_response.json()["access_token"]
+    token_payload = token_response.json()
+    token = token_payload["access_token"]
+    assert token_payload["user"]["id"] == user_id
+    assert token_payload["user"]["role"] == "customer"
+    assert "hashed_password" not in token_payload["user"]
     me = client.get("/auth/me", headers=auth_header(token))
     assert me.status_code == 200
     assert me.json()["id"] == user_id
@@ -115,6 +119,36 @@ def test_login_rejects_bad_credentials_and_me_requires_valid_token(
     assert client.get(
         "/auth/me", headers=auth_header("invalid-token")
     ).status_code == 401
+
+
+def test_seed_categories_uses_one_read(client: TestClient) -> None:
+    statements: list[str] = []
+
+    def record_statement(
+        _connection,
+        _cursor,
+        statement,
+        _parameters,
+        _context,
+        _executemany,
+    ):
+        statements.append(statement)
+
+    sqlalchemy_event.listen(
+        database.engine, "before_cursor_execute", record_statement
+    )
+    try:
+        database.seed_categories()
+    finally:
+        sqlalchemy_event.remove(
+            database.engine, "before_cursor_execute", record_statement
+        )
+
+    selects = [
+        statement for statement in statements
+        if statement.lstrip().upper().startswith("SELECT")
+    ]
+    assert len(selects) == 1
 
 
 def test_admin_can_assign_roles_and_customers_cannot(client: TestClient) -> None:

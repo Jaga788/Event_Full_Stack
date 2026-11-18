@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://event-full-stack-sigma.vercel.app/sitemap.xml

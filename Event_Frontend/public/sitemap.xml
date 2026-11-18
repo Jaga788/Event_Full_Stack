@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://event-full-stack-sigma.vercel.app/</loc>
+  </url>
+  <url>
+    <loc>https://event-full-stack-sigma.vercel.app/services</loc>
+  </url>
+  <url>
+    <loc>https://event-full-stack-sigma.vercel.app/events/wedding</loc>
+  </url>
+  <url>
+    <loc>https://event-full-stack-sigma.vercel.app/events/engagement</loc>
+  </url>
+  <url>
+    <loc>https://event-full-stack-sigma.vercel.app/events/birthday</loc>
+  </url>
+  <url>
+    <loc>https://event-full-stack-sigma.vercel.app/events/maturity-function</loc>
+  </url>
+  <url>
+    <loc>https://event-full-stack-sigma.vercel.app/events/baby-shower-and-naming</loc>
+  </url>
+  <url>
+    <loc>https://event-full-stack-sigma.vercel.app/events/corporate-and-parties</loc>
+  </url>
+</urlset>

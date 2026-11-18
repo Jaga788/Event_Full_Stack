@@ -11,7 +11,7 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!token) {
+    if (!token || user) {
       setLoading(false);
       return;
     }
@@ -36,14 +36,14 @@ export function AuthProvider({ children }) {
         if (active) setLoading(false);
       });
     return () => { active = false; };
-  }, [token]);
+  }, [token, user]);
 
   const login = async (email, password) => {
     const result = await api.login(email.trim().toLowerCase(), password);
     setError("");
     localStorage.setItem(TOKEN_KEY, result.access_token);
     setToken(result.access_token);
-    const currentUser = await api.me(result.access_token);
+    const currentUser = result.user || await api.me(result.access_token);
     setUser(currentUser);
     setLoading(false);
     return currentUser;
