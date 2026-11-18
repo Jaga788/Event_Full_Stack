@@ -64,7 +64,7 @@ function AiPlanner() {
       <h1 className="page-title">AI Event Planner</h1>
       <p className="section-sub left">
         Share the basics and get a tailored event outline with recommendations from
-        Eventora’s active packages and services.
+        Jaga Events’ active packages and services.
       </p>
       {(error || catalogError) && (
         <p className="error" role="alert">{error || catalogError}</p>

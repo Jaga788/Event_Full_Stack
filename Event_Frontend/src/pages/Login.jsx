@@ -43,7 +43,7 @@ function Login() {
   return (
     <div className="login-page">
       <form className="login-box" onSubmit={handleSubmit}>
-        <div className="brand-mark big">E</div>
+        <div className="brand-mark big">J</div>
         <p className="eyebrow">EVENTORA · EVENT MANAGEMENT</p>
         <h2>{isSignup ? "Your next event starts here" : "Welcome back"}</h2>
         <p className="muted">{isSignup ? "Create a customer account to plan and book with confidence." : "Sign in to manage your events and bookings."}</p>
@@ -70,7 +70,7 @@ function Login() {
         <button className="btn full" type="submit">{isSignup ? "Sign Up" : "Login"}</button>
 
         <p className="switch">
-          {isSignup ? "Already have an account?" : "New to Eventora?"}{" "}
+          {isSignup ? "Already have an account?" : "New to Jaga Events?"}{" "}
           <button type="button" className="link-btn" onClick={() => { setIsSignup(!isSignup); setShowPassword(false); setError(""); }}>
             {isSignup ? "Login" : "Sign Up"}
           </button>

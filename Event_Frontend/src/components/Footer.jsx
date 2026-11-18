@@ -11,7 +11,7 @@ function Footer() {
     <footer className="site-footer">
       <div className="footer-grid">
         <div>
-          <h4>Eventora</h4>
+          <h4>Jaga Events</h4>
           <p>Book decoration, catering, photography and full event packages for every family function — all in one place.</p>
         </div>
         <div>
@@ -34,10 +34,10 @@ function Footer() {
           <h4>Contact</h4>
           <p className="footer-contact"><MapPin size={16} aria-hidden="true" /> Hyderabad, Telangana</p>
           <p className="footer-contact"><Phone size={16} aria-hidden="true" /> +91 98765 43210</p>
-          <p className="footer-contact"><Mail size={16} aria-hidden="true" /> hello@eventora.example</p>
+          <p className="footer-contact"><Mail size={16} aria-hidden="true" /> hello@jagaevents.example</p>
         </div>
       </div>
-      <p className="copyright">© {new Date().getFullYear()} Eventora. Demo project — no real payments are taken.</p>
+      <p className="copyright">© {new Date().getFullYear()} Jaga Events. Demo project — no real payments are taken.</p>
     </footer>
   );
 }

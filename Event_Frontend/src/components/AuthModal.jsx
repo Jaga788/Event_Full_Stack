@@ -21,7 +21,7 @@ function AuthModal({ authMode, setAuthMode, setAuthOpen, login }) {
                 type="email"
                 name="email"
                 placeholder="you@example.com"
-                defaultValue={authMode === 'login' ? 'demo@eventora.com' : ''}
+                defaultValue={authMode === 'login' ? 'demo@jagaevents.example' : ''}
                 required
               />
             </div>
@@ -41,9 +41,9 @@ function AuthModal({ authMode, setAuthMode, setAuthOpen, login }) {
             {authMode === 'login' ? 'Sign in' : 'Create demo account'} <ArrowRight size={16} />
           </button>
         </form>
-        <div className="demo-login"><ShieldCheck size={15} /> Demo login: demo@eventora.com / event123</div>
+        <div className="demo-login"><ShieldCheck size={15} /> Demo login: demo@jagaevents.example / event123</div>
         <p className="auth-switch">
-          {authMode === 'login' ? 'New to Eventora?' : 'Already have an account?'}
+          {authMode === 'login' ? 'New to Jaga Events?' : 'Already have an account?'}
           {' '}
           <button onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}>
             {authMode === 'login' ? 'Create an account' : 'Sign in'}

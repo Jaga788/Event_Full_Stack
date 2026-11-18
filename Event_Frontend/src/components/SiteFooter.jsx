@@ -7,13 +7,13 @@ function SiteFooter({ go }) {
       <div className="footer-top">
         <button className="brand footer-brand" onClick={() => go('home')}>
           <span className="brand-mark"><PartyPopper size={22} /></span>
-          <span>eventora<span className="brand-dot">.</span><small>EXPERIENCES, MADE EASY</small></span>
+          <span>Jaga Events<small>EXPERIENCES, MADE EASY</small></span>
         </button>
         <p>Less scrolling. More living.</p>
         <button className="back-top" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>BACK TO TOP ↑</button>
       </div>
       <div className="footer-bottom">
-        <span>© 2026 EVENTORA. MADE FOR MOMENTS.</span>
+        <span>© 2026 JAGA EVENTS. MADE FOR MOMENTS.</span>
         <span>DISCOVER · CONNECT · EXPERIENCE</span>
         <span className="demo-note">DEMO PROJECT · NO REAL PAYMENTS</span>
       </div>

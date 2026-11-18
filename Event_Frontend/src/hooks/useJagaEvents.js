@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { initialEvents } from '../data/events.js';
 import { readLocalStorage } from '../utils/formatters.js';
 
-function useEventora() {
+function useJagaEvents() {
   const [events, setEvents] = useState(() => readLocalStorage('eventora_events', initialEvents));
   const [cart, setCart] = useState(() => readLocalStorage('eventora_cart', []));
   const [wishlist, setWishlist] = useState(() => readLocalStorage('eventora_wishlist', []));
@@ -94,7 +94,7 @@ function useEventora() {
       email,
     });
     setAuthOpen(false);
-    notify('Welcome to Eventora!');
+    notify('Welcome to Jaga Events!');
   }
 
   function checkout() {
@@ -163,4 +163,4 @@ function useEventora() {
   };
 }
 
-export default useEventora;
+export default useJagaEvents;

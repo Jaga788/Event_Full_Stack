@@ -24,8 +24,8 @@ function DashboardLayout({
     <div className="dashboard-layout">
       <aside className="dashboard-sidebar">
         <Link className="dashboard-brand" to="/">
-          <span className="dashboard-brand-mark">E</span>
-          <span>Eventora<small>EVENT MANAGEMENT</small></span>
+          <span className="dashboard-brand-mark">J</span>
+          <span>Jaga Events<small>EVENT MANAGEMENT</small></span>
         </Link>
         <p className="dashboard-sidebar-label">{roleLabel} workspace</p>
         <nav className="dashboard-navigation" aria-label={`${roleLabel} navigation`}>

@@ -1,4 +1,4 @@
-/* ===== Eventora styles =====
+/* ===== Jaga Events styles =====
    1. Base  2. Buttons  3. Header  4. Home  5. Cards & grids
    6. Details  7. Cart/Checkout  8. Orders & misc  9. Footer  10. Responsive */
 
@@ -337,7 +337,7 @@ blockquote footer { color: var(--muted); font-size: 0.85rem; }
   .page-title { font-size: 1.5rem; }
 }
 
-/* ---------- Eventora refresh ---------- */
+/* ---------- Jaga Events refresh ---------- */
 body {
   font-family: "DM Sans", "Segoe UI", sans-serif;
   background: var(--bg);

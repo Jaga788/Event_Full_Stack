@@ -28,10 +28,10 @@ function Header() {
   return (
     <header className="site-header">
       <div className="top-bar">
-        <Link to="/" className="brand" aria-label="Eventora home">
-          <span className="brand-mark">E</span>
+        <Link to="/" className="brand" aria-label="Jaga Events home">
+          <span className="brand-mark">J</span>
           <span className="brand-text">
-            Eventora
+            Jaga Events
             <small>Event Management</small>
           </span>
         </Link>

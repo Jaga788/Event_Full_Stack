@@ -33,7 +33,7 @@ function Home() {
       <section className="hero">
         <div className="hero-text">
           <p className="eyebrow">Professional event planning, made personal</p>
-          <h1>Event Management. <span>Thoughtfully planned.</span></h1>
+          <h1>Jaga Events. <span>Thoughtfully planned.</span></h1>
           <p className="hero-sub">
             From company gatherings to once-in-a-lifetime celebrations, find experienced
             teams, clear packages and the details that make an event yours.
@@ -64,7 +64,7 @@ function Home() {
             {detailCategory?.image && <img src={detailCategory.image} alt={`${detailCategory.name} event setup`} />}
           </div>
           <div className="hero-photo-note">
-            <span className="photo-note-mark" aria-hidden="true">E</span>
+            <span className="photo-note-mark" aria-hidden="true">J</span>
             <span><b>Every detail, considered</b><small>One team for the whole occasion</small></span>
           </div>
           <span className="hero-image-caption">EVENTS, WELL ORCHESTRATED</span>
@@ -73,7 +73,7 @@ function Home() {
 
       {error && <p className="page error" role="alert">Could not load the live catalog: {error}</p>}
       {loading && <p className="page empty-text" role="status">Loading the latest event categories and packages…</p>}
-      <section className="home-promises" aria-label="Why plan with Eventora">
+      <section className="home-promises" aria-label="Why plan with Jaga Events">
         <div><span aria-hidden="true"><Layers3 size={19} /></span><p><b>Easy to compare</b><small>Clear packages and prices</small></p></div>
         <div><span aria-hidden="true"><BadgeCheck size={19} /></span><p><b>Made for your moment</b><small>Options for every occasion</small></p></div>
         <div><span aria-hidden="true"><Headset size={19} /></span><p><b>Helpful from the start</b><small>Support when you need it</small></p></div>

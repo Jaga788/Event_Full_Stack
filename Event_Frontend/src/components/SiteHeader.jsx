@@ -24,9 +24,9 @@ function SiteHeader({
         <ArrowRight size={14} />
       </div>
       <header className="header">
-        <button className="brand" onClick={() => go('home')} aria-label="Eventora home">
+        <button className="brand" onClick={() => go('home')} aria-label="Jaga Events home">
           <span className="brand-mark"><PartyPopper size={22} /></span>
-          <span>eventora<span className="brand-dot">.</span><small>EXPERIENCES, MADE EASY</small></span>
+          <span>Jaga Events<small>EXPERIENCES, MADE EASY</small></span>
         </button>
         <nav className={`nav ${mobileOpen ? 'nav-open' : ''}`}>
           <button className={page === 'home' ? 'nav-link active' : 'nav-link'} onClick={() => go('home')}>Home</button>
