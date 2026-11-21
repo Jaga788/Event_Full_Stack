@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -23,6 +23,10 @@ import AiPlanner from "./pages/AiPlanner";
 
 function App() {
   const { loading } = useAuth();
+  const { pathname } = useLocation();
+  const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
+  const isOrganizerRoute = pathname === "/organizer" || pathname.startsWith("/organizer/");
+  const isWorkspaceRoute = isAdminRoute || isOrganizerRoute;
 
   if (loading) {
     return (
@@ -35,10 +39,10 @@ function App() {
   }
 
   return (
-    <div className="app">
+    <div className={`app${isWorkspaceRoute ? " app-admin" : ""}`}>
       <ScrollToTop />
-      <Header />
-      <main className="page-content">
+      {!isWorkspaceRoute && <Header />}
+      <main className={`page-content${isWorkspaceRoute ? " admin-app-content" : ""}`}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/services" element={<Services />} />
@@ -50,14 +54,16 @@ function App() {
           <Route path="/ai-planner" element={<ProtectedRoute role="customer"><AiPlanner /></ProtectedRoute>} />
           <Route path="/login" element={<Login />} />
           <Route path="/admin" element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
+          <Route path="/admin/:section" element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
           <Route path="/organizer" element={<ProtectedRoute role="organizer"><OrganizerDashboard /></ProtectedRoute>} />
+          <Route path="/organizer/:section" element={<ProtectedRoute role="organizer"><OrganizerDashboard /></ProtectedRoute>} />
           <Route path="/checkout" element={<ProtectedRoute role="customer"><Checkout /></ProtectedRoute>} />
           <Route path="/order-success/:id" element={<ProtectedRoute role="customer"><OrderSuccess /></ProtectedRoute>} />
           <Route path="/orders" element={<ProtectedRoute role="customer"><Orders /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
-      <Footer />
+      {!isWorkspaceRoute && <Footer />}
     </div>
   );
 }

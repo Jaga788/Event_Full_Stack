@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
+import { LogOut } from "lucide-react";
 
 function DashboardLayout({
   user,
   roleLabel,
+  onLogout,
   eyebrow,
   title,
   description,
@@ -10,6 +12,8 @@ function DashboardLayout({
   activeItem,
   onNavigate,
   stats,
+  variant = "default",
+  workspaceRef,
   children,
 }) {
   const initials = user.full_name
@@ -21,7 +25,7 @@ function DashboardLayout({
     .toUpperCase();
 
   return (
-    <div className="dashboard-layout">
+    <div className={`dashboard-layout dashboard-layout-${variant}`}>
       <aside className="dashboard-sidebar">
         <Link className="dashboard-brand" to="/">
           <span className="dashboard-brand-mark">J</span>
@@ -38,18 +42,31 @@ function DashboardLayout({
               disabled={item.disabled}
               onClick={() => onNavigate(item.id)}
             >
-              <span className="dashboard-nav-marker" aria-hidden="true" />
+              <span className="dashboard-nav-icon" aria-hidden="true">
+                {item.icon ? <item.icon size={16} strokeWidth={1.8} /> : <span className="dashboard-nav-marker" />}
+              </span>
               {item.label}
               {item.count != null && <span className="dashboard-nav-count">{item.count}</span>}
             </button>
           ))}
         </nav>
-        <div className="dashboard-account">
-          <span className="dashboard-avatar">{initials}</span>
-          <span className="dashboard-account-copy">
-            <strong>{user.full_name}</strong>
-            <small>{roleLabel}</small>
-          </span>
+        <div className={`dashboard-account${onLogout ? " dashboard-account-admin" : ""}`}>
+          <div className="dashboard-account-profile">
+            <span className="dashboard-avatar">{initials}</span>
+            <span className="dashboard-account-copy">
+              <strong>{user.full_name}</strong>
+              <small>{roleLabel}</small>
+            </span>
+          </div>
+          {onLogout && (
+            <div className="dashboard-account-actions">
+              <Link to="/">Visit website</Link>
+              <button type="button" onClick={onLogout}>
+                <LogOut size={15} aria-hidden="true" />
+                Sign out
+              </button>
+            </div>
+          )}
         </div>
       </aside>
 
@@ -73,7 +90,7 @@ function DashboardLayout({
             ))}
           </section>
         )}
-        <div className="dashboard-workspace">{children}</div>
+        <div ref={workspaceRef} className="dashboard-workspace">{children}</div>
       </main>
     </div>
   );

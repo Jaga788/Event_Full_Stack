@@ -1,13 +1,57 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  CalendarDays,
+  ClipboardList,
+  LayoutDashboard,
+  Package,
+  Tags,
+  Users,
+} from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../context/AuthContext";
 import { formatDate, formatINR } from "../utils/format";
 import DashboardLayout from "../components/DashboardLayout";
+import AdminItemEditor from "../components/AdminItemEditor";
 import SuccessToast from "../components/SuccessToast";
 import useCatalog from "../hooks/useCatalog";
 import CategoryThumbnail from "../components/CategoryThumbnail";
 
 const sections = ["Overview", "Users", "Events", "Bookings", "Catalog", "Categories"];
+const sectionIcons = {
+  Overview: LayoutDashboard,
+  Users,
+  Events: CalendarDays,
+  Bookings: ClipboardList,
+  Catalog: Package,
+  Categories: Tags,
+};
+const sectionHeaders = {
+  Overview: {
+    title: "Admin overview",
+    description: "Review activity and monitor your event catalog.",
+  },
+  Users: {
+    title: "User accounts",
+    description: "Review registered accounts and manage user roles.",
+  },
+  Events: {
+    title: "Event requests",
+    description: "Review event details, update status, and assign organizers.",
+  },
+  Bookings: {
+    title: "Service bookings",
+    description: "Manage booking status and organizer assignments.",
+  },
+  Catalog: {
+    title: "Catalog management",
+    description: "Create, edit, and manage packages and service listings.",
+  },
+  Categories: {
+    title: "Category management",
+    description: "Create, edit, and manage event and service categories.",
+  },
+};
 const bookingStatuses = ["requested", "confirmed", "cancelled", "completed"];
 const initialServiceForm = {
   title: "",
@@ -32,10 +76,13 @@ const initialPackageForm = {
 };
 
 function AdminDashboard() {
-  const { token, user } = useAuth();
+  const { token, user, logout } = useAuth();
+  const navigate = useNavigate();
+  const { section: sectionParam } = useParams();
   const { refreshCatalog, categories: eventCategories, serviceCategories } = useCatalog();
   const catalogCategories = [...eventCategories, ...serviceCategories];
-  const [section, setSection] = useState("Overview");
+  const section = sections.find((item) => item.toLowerCase() === sectionParam?.toLowerCase()) || "Overview";
+  const [catalogView, setCatalogView] = useState("list");
   const [data, setData] = useState({
     users: [], events: [], bookings: [], categories: [], packages: [], services: [],
   });
@@ -45,7 +92,9 @@ function AdminDashboard() {
   const [error, setError] = useState("");
   const [toast, setToast] = useState(null);
   const [imageUploadStatus, setImageUploadStatus] = useState({});
+  const [editingItem, setEditingItem] = useState(null);
   const [busy, setBusy] = useState(false);
+  const workspaceRef = useRef(null);
 
   const showSuccessToast = (message) => {
     setToast({ id: Date.now(), message });
@@ -68,6 +117,16 @@ function AdminDashboard() {
     refresh().catch((requestError) => setError(requestError.message));
   }, [refresh]);
 
+  useEffect(() => {
+    if (workspaceRef.current) workspaceRef.current.scrollTop = 0;
+  }, [section]);
+
+  useEffect(() => {
+    if (sectionParam && !sections.some((item) => item.toLowerCase() === sectionParam.toLowerCase())) {
+      navigate("/admin/overview", { replace: true });
+    }
+  }, [navigate, sectionParam]);
+
   const runAction = async (action, message) => {
     setBusy(true);
     setError("");
@@ -76,12 +135,22 @@ function AdminDashboard() {
       await action();
       await refresh();
       showSuccessToast(message);
+      return true;
     } catch (requestError) {
       setError(requestError.message);
+      return requestError.message;
     } finally {
       setBusy(false);
     }
   };
+
+  const saveEditedItem = (kind, id, payload) => runAction(async () => {
+    if (kind === "category") await api.updateCategory(token, id, payload);
+    if (kind === "service") await api.updateServiceListing(token, id, payload);
+    if (kind === "package") await api.updatePackage(token, id, payload);
+    if (kind === "event") await api.updateEvent(token, id, payload);
+    if (["category", "service", "package"].includes(kind)) refreshCatalog();
+  }, `${kind[0].toUpperCase()}${kind.slice(1)} updated.`);
 
   const updateEventStatus = (event, status) => runAction(
     () => api.updateEventStatus(token, event.id, status),
@@ -127,6 +196,8 @@ function AdminDashboard() {
       });
       setServiceForm(initialServiceForm);
       setImageUploadStatus((current) => ({ ...current, service: null }));
+      setCatalogView("list");
+      refreshCatalog();
     }, "Service listing created.");
   };
 
@@ -183,6 +254,8 @@ function AdminDashboard() {
       });
       setPackageForm(initialPackageForm);
       setImageUploadStatus((current) => ({ ...current, package: null }));
+      setCatalogView("list");
+      refreshCatalog();
     }, "Package created.");
   };
 
@@ -223,18 +296,43 @@ function AdminDashboard() {
     { label: "Service listings", value: data.services.length },
     { label: "Categories", value: data.categories.length },
   ];
+  const navItems = sections.map((label) => {
+    const count = {
+      Users: data.users.length,
+      Events: data.events.length,
+      Bookings: data.bookings.length,
+      Catalog: data.packages.length + data.services.length,
+      Categories: data.categories.length,
+    }[label];
+    return { id: label, label, icon: sectionIcons[label], count };
+  });
+  const activeHeader = sectionHeaders[section];
+  const navigateToSection = (nextSection) => {
+    navigate(`/admin/${nextSection.toLowerCase()}`);
+  };
+  const navigateCatalogView = (nextView) => {
+    setCatalogView(nextView);
+    if (workspaceRef.current) workspaceRef.current.scrollTop = 0;
+  };
+  const exitAdmin = () => {
+    logout();
+    navigate("/", { replace: true });
+  };
 
   return (
     <DashboardLayout
+      variant="admin"
       user={user}
       roleLabel="Administrator"
+      onLogout={exitAdmin}
       eyebrow="EVENTORA CONTROL ROOM"
-      title="Admin dashboard"
-      description="Review requests, coordinate assignments, and manage your event catalog."
-      navItems={sections.map((item) => ({ id: item, label: item }))}
+      title={activeHeader.title}
+      description={activeHeader.description}
+      navItems={navItems}
       activeItem={section}
-      onNavigate={setSection}
-      stats={countCards}
+      onNavigate={navigateToSection}
+      stats={section === "Overview" ? countCards : []}
+      workspaceRef={workspaceRef}
     >
       {error && <p className="error admin-alert" role="alert">{error}</p>}
       {toast && (
@@ -252,7 +350,7 @@ function AdminDashboard() {
           <div className="admin-activity">
             {data.bookings.slice(0, 5).map((booking) => (
               <div key={booking.id}>
-                <span>Booking #{booking.id} · {booking.item_title}</span>
+                <span>Booking #{booking.id}<small>{booking.item_title}</small></span>
                 <b className={`status ${booking.status}`}>{booking.status}</b>
               </div>
             ))}
@@ -282,7 +380,7 @@ function AdminDashboard() {
                   <td>{account.is_active ? "Active" : "Inactive"}</td>
                   <td>{formatDate(account.created_at)}</td>
                   <td>
-                    {account.id !== user.id && <button className="link-btn danger" disabled={busy}
+                    {account.id !== user.id && <button className="admin-action-button danger" type="button" disabled={busy}
                       onClick={() => window.confirm(`Delete ${account.full_name}?`) && runAction(
                         () => api.deleteUser(token, account.id),
                         "User deleted.",
@@ -301,7 +399,7 @@ function AdminDashboard() {
           <p className="muted">Accepting an event confirms its requested service bookings. Declining it also declines its pending bookings.</p>
           <div className="admin-table-wrap">
             <table className="admin-table">
-              <thead><tr><th>Event</th><th>Customer</th><th>Contact</th><th>Date / venue</th><th>Budget</th><th>Status</th><th>Organizer</th></tr></thead>
+              <thead><tr><th>Event</th><th>Customer</th><th>Contact</th><th>Date / venue</th><th>Budget</th><th>Status</th><th>Organizer</th><th>Details</th></tr></thead>
               <tbody>{data.events.map((event) => (
                 <tr key={event.id}>
                   <td>{event.title}<small>Event #{event.id}</small></td>
@@ -343,6 +441,12 @@ function AdminDashboard() {
                     {!event.organizer_id && ["cancelled", "completed"].includes(event.status) && (
                       <small>Cannot assign a {event.status} event</small>
                     )}
+                  </td>
+                  <td>
+                    <button className="admin-action-button" type="button" disabled={busy}
+                      onClick={() => setEditingItem({ kind: "event", item: event })}>
+                      Edit details
+                    </button>
                   </td>
                 </tr>
               ))}</tbody>
@@ -413,8 +517,29 @@ function AdminDashboard() {
 
       {section === "Catalog" && (
         <section className="admin-panel">
-          <h2>Packages and service listings</h2>
-          <p className="muted">Deactivate listings to remove them from the customer catalog without deleting their history.</p>
+          <div className="admin-panel-heading">
+            <div>
+              <h2>Catalog management</h2>
+              <p className="muted">Manage packages and service listings in separate views.</p>
+            </div>
+            <span className="admin-panel-count">{data.packages.length + data.services.length} listings</span>
+          </div>
+          <div className="admin-catalog-tabs" role="group" aria-label="Catalog pages">
+            <button type="button" className={catalogView === "list" ? "active" : ""}
+              aria-pressed={catalogView === "list"} onClick={() => navigateCatalogView("list")}>
+              Listings
+            </button>
+            <button type="button" className={catalogView === "package" ? "active" : ""}
+              aria-pressed={catalogView === "package"} onClick={() => navigateCatalogView("package")}>
+              Add package
+            </button>
+            <button type="button" className={catalogView === "service" ? "active" : ""}
+              aria-pressed={catalogView === "service"} onClick={() => navigateCatalogView("service")}>
+              Add service
+            </button>
+          </div>
+          {catalogView === "package" && (
+            <>
           <h3>Add a package</h3>
           <form className="organizer-form" onSubmit={createPackageListing}>
             <label>Package title<input value={packageForm.title} maxLength={150} onChange={(event) => setPackageForm({ ...packageForm, title: event.target.value })} required /></label>
@@ -461,6 +586,10 @@ function AdminDashboard() {
             </button>
             {!packagesCategoryAvailable && <p className="muted">Add an active service category named "Packages" before publishing packages.</p>}
           </form>
+            </>
+          )}
+          {catalogView === "service" && (
+            <>
           <h3>Add a service listing</h3>
           <form className="organizer-form" onSubmit={createServiceListing}>
             <label>Service title<input value={serviceForm.title} maxLength={150} onChange={(event) => setServiceForm({ ...serviceForm, title: event.target.value })} required /></label>
@@ -513,6 +642,9 @@ function AdminDashboard() {
               {busy ? "Publishing…" : "Publish service"}
             </button>
           </form>
+            </>
+          )}
+          {catalogView === "list" && (
           <div className="admin-table-wrap">
             <table className="admin-table">
               <thead><tr><th>Listing</th><th>Type</th><th>Category</th><th>Food type</th><th>Catalog owner</th><th>Price</th><th>State</th><th>Actions</th></tr></thead>
@@ -530,31 +662,36 @@ function AdminDashboard() {
                     <td>{formatINR(item.price)}<small>{item.price_unit.replaceAll("_", " ")}</small></td>
                     <td>{item.is_active ? "Active" : "Inactive"}</td>
                     <td>
-                      <button className="link-btn" disabled={busy} onClick={() => runAction(
-                        () => item.itemType === "package"
-                          ? api.updatePackage(token, item.id, {
-                            title: item.title, description: item.description,
-                            organizer_id: null, event_category_ids: item.event_category_ids,
-                            price: item.price, price_unit: item.price_unit, image_url: item.image_url,
-                            badge: item.badge, max_guests: item.max_guests, included_items: item.included_items,
-                            average_rating: item.average_rating, review_count: item.review_count,
-                            is_active: !item.is_active,
-                          })
-                          : api.updateServiceListing(token, item.id, {
-                            title: item.title, description: item.description,
-                            category_id: item.category_id, event_category_ids: item.event_category_ids,
-                            organizer_id: null, price: item.price, price_unit: item.price_unit,
-                            dietary_type: item.dietary_type, image_url: item.image_url, is_active: !item.is_active,
-                          }),
-                        `Listing ${item.is_active ? "deactivated" : "activated"}.`,
-                      )}>{item.is_active ? "Deactivate" : "Activate"}</button>
-                      {" · "}
-                      <button className="link-btn danger" disabled={busy} onClick={() => window.confirm(`Delete "${item.title}"?`) && runAction(
-                        () => item.itemType === "package"
-                          ? api.deletePackage(token, item.id)
-                          : api.deleteServiceListing(token, item.id),
-                        "Listing deleted.",
-                      )}>Delete</button>
+                      <div className="admin-row-actions">
+                        <button className="admin-action-button" type="button" disabled={busy}
+                          onClick={() => setEditingItem({ kind: item.itemType, item })}>
+                          Edit
+                        </button>
+                        <button className="admin-action-button" type="button" disabled={busy} onClick={() => runAction(
+                          () => item.itemType === "package"
+                            ? api.updatePackage(token, item.id, {
+                              title: item.title, description: item.description,
+                              organizer_id: item.organizer_id, event_category_ids: item.event_category_ids,
+                              price: item.price, price_unit: item.price_unit, image_url: item.image_url,
+                              badge: item.badge, max_guests: item.max_guests, included_items: item.included_items,
+                              average_rating: item.average_rating, review_count: item.review_count,
+                              is_active: !item.is_active,
+                            })
+                            : api.updateServiceListing(token, item.id, {
+                              title: item.title, description: item.description,
+                              category_id: item.category_id, event_category_ids: item.event_category_ids,
+                              organizer_id: item.organizer_id, price: item.price, price_unit: item.price_unit,
+                              dietary_type: item.dietary_type, image_url: item.image_url, is_active: !item.is_active,
+                            }),
+                          `Listing ${item.is_active ? "deactivated" : "activated"}.`,
+                        )}>{item.is_active ? "Deactivate" : "Activate"}</button>
+                        <button className="admin-action-button danger" type="button" disabled={busy} onClick={() => window.confirm(`Delete "${item.title}"?`) && runAction(
+                          () => item.itemType === "package"
+                            ? api.deletePackage(token, item.id)
+                            : api.deleteServiceListing(token, item.id),
+                          "Listing deleted.",
+                        )}>Delete</button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -562,6 +699,7 @@ function AdminDashboard() {
             </table>
             {!data.packages.length && !data.services.length && <p className="empty-text">No catalog listings found.</p>}
           </div>
+          )}
         </section>
       )}
 
@@ -585,15 +723,34 @@ function AdminDashboard() {
                   />
                   <span>{category.name}<small>{category.kind} · {category.is_active ? "active" : "inactive"}</small></span>
                 </span>
-                <button className="link-btn danger" disabled={busy}
+                <span className="admin-category-actions">
+                  <button className="admin-action-button" type="button" disabled={busy}
+                    onClick={() => setEditingItem({ kind: "category", item: category })}>
+                    Edit
+                  </button>
+                <button className="admin-action-button danger" type="button" disabled={busy}
                   onClick={() => window.confirm(`Delete category "${category.name}"?`) && runAction(
                     () => api.deleteCategory(token, category.id),
                     "Category deleted.",
                   )}>Delete</button>
+                </span>
               </div>
             ))}
           </div>
         </section>
+      )}
+      {editingItem && (
+        <AdminItemEditor
+          key={`${editingItem.kind}-${editingItem.item.id}`}
+          kind={editingItem.kind}
+          item={editingItem.item}
+          eventCategories={data.categories.filter((category) => category.kind === "event")}
+          serviceCategories={data.categories.filter((category) => category.kind === "service")}
+          token={token}
+          busy={busy}
+          onClose={() => setEditingItem(null)}
+          onSave={saveEditedItem}
+        />
       )}
     </DashboardLayout>
   );
